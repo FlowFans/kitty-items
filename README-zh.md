@@ -6,13 +6,13 @@
 
 👋 欢迎! 这个演示应用程序是为了帮助你学习如何在 flow 上构建项目。
 
-- Kitty Items是一个使用[Cadence](https://docs.onflow.org/cadence)构建的完整的 NFT 交易市场，基于 Flow 的面向资源的智能合约编程语言。
+- Kitty Items 是一个使用[Cadence](https://docs.onflow.org/cadence)构建的完整的 NFT 交易市场，基于 Flow 的面向资源的智能合约编程语言。
 - 学习如何部署智能合约、创建 NFT，以及将用户钱包与 Flow 客户端库(FCL)集成。
 
 ## 🎬 在线示例
 
 
-查看部署在 Flow 测试网中的 [Kitty物品的在线示例](http://kitty-items-flow-testnet.herokuapp.com/)。
+查看部署在 Flow 测试网中的 [Kitty Items 的在线示例](http://kitty-items-flow-testnet.herokuapp.com/)。
 
 ## ✨ 从这里开始
 
@@ -94,15 +94,13 @@ flow project deploy --network=testnet
 
 ### 3. Cadence 代码 | [kitty-items/cadence](https://github.com/onflow/kitty-items/tree/master/cadence)
 
-[Cadence](https://docs.onflow.org/cadence) smart contracts, scripts & transactions for your viewing pleasure. This folder contains all of the blockchain logic for the marketplace application. Here you will find examples of [fungible token](https://github.com/onflow/flow-ft) and [non-fungible token (NFT)](https://github.com/onflow/flow-nft) smart contract implementations, as well as the scripts and transactions that interact with them. It also contains examples of how to _test_ your Cadence code (tests written in Golang).
-
-[Cadence](https://docs.onflow.org/cadence) 智能合约，脚本和交易，为方便查看。这个文件夹包含市场应用程序的所有区块链逻辑。在这里你可以找到[同质化代币](https://github.com/onflow/flow-ft)和[非同质化代币(NFT)](https://github.com/onflow/flow-nft)智能合约实现的例子，以及与它们交互的脚本和事务。它还包含了如何测试你的Cadence代码(用戈朗语编写的测试)的示例。
+[Cadence](https://docs.onflow.org/cadence) 智能合约，脚本和交易，为方便查看。这个文件夹包含市场应用程序的所有区块链逻辑。在这里你可以找到[同质化代币](https://github.com/onflow/flow-ft)和[非同质化代币(NFT)](https://github.com/onflow/flow-nft)智能合约实现的例子，以及与它们交互的脚本和事务。它还包含了如何测试你的 Cadence 代码(用 Golang 编写的测试)的示例。
 
 ## 😺 什么是 Kitty Items?
 
-这些物品是你的猫的帽子，但实际上它们是[非同质化代币 (NFTs)](https://github.com/onflow/flow-nft)，存储在 Flow 区块链上。
-道具可以用可替换的代币从市场购买。
-在未来，您将能够将它们添加到[Ethereum CryptoKitties](https://www.cryptokitties.co/)，并由oracle验证其所有权。
+这些 Items 是你的猫的帽子，但实际上它们是[非同质化代币 (NFTs)](https://github.com/onflow/flow-nft)，存储在 Flow 区块链上。
+道具可以用同质化代币从市场购买。
+在未来，您将能够将它们添加到[以太坊的 CryptoKitties](https://www.cryptokitties.co/)，并由oracle验证其所有权。
 
 ## ❓ 更多问题?
 
