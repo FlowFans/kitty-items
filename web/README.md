@@ -1,5 +1,7 @@
 # Kitty Items Web
 
+[Chinese version](https://github.com/FlowFans/kitty-items/blob/zh/web/README-zh.md)
+
 - An example application built to use the Flow blockchain.
 - The majority of its features are directly powered by on-chain contracts.
 
