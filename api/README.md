@@ -1,5 +1,7 @@
 # Kitty Items API
 
+[Chinese version](https://github.com/FlowFans/kitty-items/blob/zh/api/README-zh.md)
+
 The Kitty Items API is a RESTful API built with [express](https://expressjs.com/) that sends transactions to Flow using the [Flow JS SDK](https://github.com/onflow/flow-js-sdk/).
 
 ## Getting started
