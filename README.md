@@ -6,6 +6,8 @@
 
 👋 Welcome! This demo app was created to help you learn how to build on Flow.
 
+[Chinese version](https://github.com/FlowFans/kitty-items/blob/zh/README-zh.md)
+
 - Kitty Items is a **complete NFT marketplace** built with [Cadence](https://docs.onflow.org/cadence), Flow's resource-oriented smart contract programming language.
 - Learn how to deploy contracts, mint NFTs, and integrate user wallets with the Flow Client Library (FCL).
 
