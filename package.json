@@ -1,24 +1,35 @@
 {
   "name": "kitty-items",
-  "version": "0.1.0",
-  "dependencies": {},
+  "version": "1.0.0",
+  "description": "<p align=\"center\">     <a href=\"http://kitty-items-flow-testnet.herokuapp.com/\">         <img width=\"400\" src=\"kitty-items-banner.png\" />     </a> </p>",
+  "main": "index.js",
+  "dependencies": {
+    "lerna": "^4.0.0",
+    "yargs": "^16.2.0"
+  },
   "devDependencies": {
-    "concurrently": "^6.0.0"
+    "@types/node": "^14.14.37",
+    "@types/yargs": "^16.0.1"
   },
   "scripts": {
-    "start:api": "cd ./api && npm run start:dev",
-    "start:web": "cd ./web && npm run start:dev",
-    "start:wallet": "cd ./fcl-dev-wallet && npm run start:dev",
-    "start": "concurrently \"npm:start:*\""
+    "start": "node api/dist/index.js",
+    "start:worker": "node api/dist/index.js --worker",
+    "start:dev": "./scripts/run-local.sh",
+    "start:testnet": "./scripts/run-testnet.sh",
+    "setup-minter": "./scripts/setup-minter.sh",
+    "heroku-postbuild": "./scripts/build-all.sh"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/onflow/kitty-items.git"
   },
   "author": "",
-  "license": "MIT",
+  "license": "ISC",
   "bugs": {
     "url": "https://github.com/onflow/kitty-items/issues"
   },
-  "homepage": "https://github.com/onflow/kitty-items#readme"
+  "homepage": "https://github.com/onflow/kitty-items#readme",
+  "engines": {
+    "node": "14.x"
+  }
 }
