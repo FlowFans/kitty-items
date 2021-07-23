@@ -1,6 +1,4 @@
 import * as fcl from "@onflow/fcl";
-import { send } from "@onflow/sdk-send";
-import { getEvents } from "@onflow/sdk-build-get-events";
 
 import { BlockCursor } from "../models/block-cursor";
 import { BlockCursorService } from "../services/block-cursor";
@@ -22,13 +20,13 @@ abstract class BaseEventHandler {
   async run() {
     console.log("fetching latest block height");
 
-    let latestBlockHeight = await this.flowService.getLatestBlockHeight();
+    let startingBlockHeight = await this.flowService.getLatestBlockHeight();
 
-    console.log("latestBlockHeight =", latestBlockHeight);
+    console.log("latestBlockHeight =", startingBlockHeight);
 
     const cursors = this.eventNames.map((eventName) => {
       const cursor = this.blockCursorService.findOrCreateLatestBlockCursor(
-        latestBlockHeight,
+        startingBlockHeight,
         eventName
       );
       return { cursor, eventName };
@@ -46,25 +44,29 @@ abstract class BaseEventHandler {
 
         try {
           // Calculate block range to search
-          ({ fromBlock, toBlock } = await this.getBlockRange(blockCursor));
+          ({ fromBlock, toBlock } = await this.getBlockRange(
+            blockCursor,
+            startingBlockHeight
+          ));
         } catch (e) {
           console.warn("Error retrieving block range:", e);
         }
 
         if (fromBlock <= toBlock) {
           try {
-            const result = await send([getEvents(eventName, fromBlock, toBlock)]);
+            const result = await fcl.send([
+              fcl.getEventsAtBlockHeightRange(eventName, fromBlock, toBlock),
+            ]);
             const decoded = await fcl.decode(result);
-  
+
             if (decoded.length) {
               decoded.forEach(async (event) => await this.onEvent(event));
+              // Record the last block that we saw an event for
+              blockCursor = await this.blockCursorService.updateBlockCursorById(
+                blockCursor.id,
+                toBlock
+              );
             }
-  
-            // Record the last block that we synchronized up to
-            blockCursor = await this.blockCursorService.updateBlockCursorById(
-              blockCursor.id,
-              toBlock
-            );
           } catch (e) {
             console.error(
               `Error retrieving events for block range fromBlock=${fromBlock} toBlock=${toBlock}`,
@@ -81,23 +83,24 @@ abstract class BaseEventHandler {
 
   abstract onEvent(event: any): Promise<void>;
 
-  private async getBlockRange(currentBlockCursor: BlockCursor) {
-    const latestBlockHeight =
-      (await this.flowService.getLatestBlockHeight()) - this.latestBlockOffset;
+  private async getBlockRange(blockCursor, startingBlockHeight) {
+    let fromBlock =
+      startingBlockHeight < blockCursor.currentBlockHeight
+        ? blockCursor.currentBlockHeight
+        : startingBlockHeight;
 
-    const fromBlock = currentBlockCursor.currentBlockHeight + 1;
-    let toBlock = currentBlockCursor.currentBlockHeight + this.stepSize;
+    let toBlock = await this.flowService.getLatestBlockHeight();
 
-    // Don't look ahead to unsealed blocks
-    if (toBlock > latestBlockHeight) {
-      toBlock = latestBlockHeight;
+    if (toBlock - fromBlock > this.stepSize) {
+      fromBlock = toBlock - 1;
+      toBlock = await this.flowService.getLatestBlockHeight();
     }
 
     console.log(
-      `fromBlock=${fromBlock} toBlock=${toBlock} latestBlock=${latestBlockHeight}`
+      `fromBlock=${fromBlock} toBlock=${toBlock} latestBlock=${toBlock}`
     );
 
-    return { fromBlock, toBlock };
+    return Object.assign({}, { fromBlock, toBlock });
   }
 }
 
