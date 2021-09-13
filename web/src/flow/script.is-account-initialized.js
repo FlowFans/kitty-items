@@ -4,39 +4,39 @@ import {Address} from "@onflow/types"
 const CODE = cdc`
   import FungibleToken from 0xFungibleToken
   import NonFungibleToken from 0xNonFungibleToken
-  import Kibble from 0xKibble
+  import FUSD from 0xFUSD
   import KittyItems from 0xKittyItems
-  import KittyItemsMarket from 0xKittyItemsMarket
+  import NFTStorefront from 0xNFTStorefront
 
-  pub fun hasKibble(_ address: Address): Bool {
+  pub fun hasFUSD(_ address: Address): Bool {
     let receiver: Bool = getAccount(address)
-      .getCapability<&Kibble.Vault{FungibleToken.Receiver}>(Kibble.ReceiverPublicPath)
+      .getCapability<&FUSD.Vault{FungibleToken.Receiver}>(/public/fusdReceiver)
       .check()
 
     let balance: Bool = getAccount(address)
-      .getCapability<&Kibble.Vault{FungibleToken.Balance}>(Kibble.BalancePublicPath)
+      .getCapability<&FUSD.Vault{FungibleToken.Balance}>(/public/fusdBalance)
       .check()
 
     return receiver && balance
   }
 
-  pub fun hasKittyItems(_ address: Address): Bool {
+  pub fun hasItems(_ address: Address): Bool {
     return getAccount(address)
       .getCapability<&KittyItems.Collection{NonFungibleToken.CollectionPublic, KittyItems.KittyItemsCollectionPublic}>(KittyItems.CollectionPublicPath)
       .check()
   }
 
-  pub fun hasKittyItemsMarket(_ address: Address): Bool {
+  pub fun hasStorefront(_ address: Address): Bool {
     return getAccount(address)
-      .getCapability<&KittyItemsMarket.Collection{KittyItemsMarket.CollectionPublic}>(KittyItemsMarket.CollectionPublicPath)
+      .getCapability<&NFTStorefront.Storefront{NFTStorefront.StorefrontPublic}>(NFTStorefront.StorefrontPublicPath)
       .check()
   }
 
   pub fun main(address: Address): {String: Bool} {
     let ret: {String: Bool} = {}
-    ret["Kibble"] = hasKibble(address)
-    ret["KittyItems"] = hasKittyItems(address)
-    ret["KittyItemsMarket"] = hasKittyItemsMarket(address)
+    ret["FUSD"] = hasFUSD(address)
+    ret["KittyItems"] = hasItems(address)
+    ret["KittyItemsMarket"] = hasStorefront(address)
     return ret
   }
 `

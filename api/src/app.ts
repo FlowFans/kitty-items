@@ -8,20 +8,23 @@ import cors from "cors";
 
 import { json, urlencoded } from "body-parser";
 
+import initFUSDRouter from "./routes/fusd";
 import initKibblesRouter from "./routes/kibbles";
 import initKittyItemsRouter from "./routes/kitty-items";
-import initMarketRouter from "./routes/market";
+import initStorefrontRouter from "./routes/storefront";
+import { FUSDService } from "./services/fusd";
 import { KibblesService } from "./services/kibbles";
 import { KittyItemsService } from "./services/kitty-items";
-import { MarketService } from "./services/market";
+import { StorefrontService } from "./services/storefront";
 
 const V1 = "/v1/";
 
 // Init all routes, setup middlewares and dependencies
 const initApp = (
+  fusdService: FUSDService,
   kibblesService: KibblesService,
   kittyItemsService: KittyItemsService,
-  marketService: MarketService
+  storefrontService: StorefrontService
 ) => {
   const app = express();
 
@@ -29,9 +32,10 @@ const initApp = (
   app.use(cors());
   app.use(json());
   app.use(urlencoded({ extended: false }));
+  app.use(V1, initFUSDRouter(fusdService));
   app.use(V1, initKibblesRouter(kibblesService));
   app.use(V1, initKittyItemsRouter(kittyItemsService));
-  app.use(V1, initMarketRouter(marketService));
+  app.use(V1, initStorefrontRouter(storefrontService));
 
   const serveReactApp = () => {
     app.use(express.static(path.resolve(__dirname, "../../web/build")));

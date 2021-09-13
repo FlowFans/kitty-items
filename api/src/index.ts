@@ -11,20 +11,21 @@ import { BlockCursorService } from "./services/block-cursor";
 import { FlowService } from "./services/flow";
 import { KibblesService } from "./services/kibbles";
 import { KittyItemsService } from "./services/kitty-items";
-import { MarketService } from "./services/market";
+import { StorefrontService } from "./services/storefront";
 import { SaleOfferHandler } from "./workers/sale-offer-handler";
+import { FUSDService } from "./services/fusd";
 
 const argv = yargs(hideBin(process.argv)).argv;
-const LOCAL = argv.dev;
+const DEV = argv.dev;
 
 let envVars;
 
-if (LOCAL) {
+if (DEV) {
   const env = require("dotenv");
   const expandEnv = require("dotenv-expand");
 
   const config = env.config({
-    path: ".env.local",
+    path: ".env.local"
   });
 
   expandEnv(config);
@@ -51,9 +52,10 @@ async function run() {
     config.minterAccountKeyIndex
   );
 
-  const marketService = new MarketService(
+  const storefrontService = new StorefrontService(
     flowService,
     config.fungibleTokenAddress,
+    config.fusdAddress,
     config.minterAddress,
     config.nonFungibleTokenAddress,
     config.minterAddress,
@@ -61,14 +63,17 @@ async function run() {
   );
 
   // Make sure we're pointing to the correct Flow Access API.
-  fcl.config().put("accessNode.api", config.accessApi);
+  fcl
+    .config()
+    .put("accessNode.api", config.accessApi)
+    .put("decoder.Type", val => val.staticType);
 
   const startWorker = () => {
     console.log("Starting Flow event worker ....");
     const blockCursorService = new BlockCursorService();
 
     const saleOfferWorker = new SaleOfferHandler(
-      marketService,
+      storefrontService,
       blockCursorService,
       flowService
     );
@@ -78,6 +83,12 @@ async function run() {
 
   const startAPIServer = () => {
     console.log("Starting API server ....");
+
+    const fusdService = new FUSDService(
+      flowService,
+      config.fungibleTokenAddress,
+      config.fusdAddress
+    );
 
     const kibblesService = new KibblesService(
       flowService,
@@ -91,18 +102,22 @@ async function run() {
       config.minterAddress
     );
 
-    const app = initApp(kibblesService, kittyItemsService, marketService);
+    const app = initApp(
+      fusdService,
+      kibblesService,
+      kittyItemsService,
+      storefrontService
+    );
 
     app.listen(config.port, () => {
       console.log(`Listening on port ${config.port}!`);
     });
   };
 
-  if (LOCAL) {
+  if (DEV) {
     // If we're in dev, run everything in one process.
     startWorker();
     startAPIServer();
-    return;
   } else if (argv.worker) {
     // If we're not in dev, look for flags. We do this so that
     // the worker can be started in seperate process using flag.

@@ -6,17 +6,17 @@ import {tx} from "./util/tx"
 const CODE = cdc`
   import FungibleToken from 0xFungibleToken
   import NonFungibleToken from 0xNonFungibleToken
-  import Kibble from 0xKibble
+  import FUSD from 0xFUSD
   import KittyItems from 0xKittyItems
-  import KittyItemsMarket from 0xKittyItemsMarket
+  import NFTStorefront from 0xNFTStorefront
 
-  pub fun hasKibble(_ address: Address): Bool {
+  pub fun hasFUSD(_ address: Address): Bool {
     let receiver = getAccount(address)
-      .getCapability<&Kibble.Vault{FungibleToken.Receiver}>(Kibble.ReceiverPublicPath)
+      .getCapability<&FUSD.Vault{FungibleToken.Receiver}>(/public/fusdReceiver)
       .check()
 
     let balance = getAccount(address)
-      .getCapability<&Kibble.Vault{FungibleToken.Balance}>(Kibble.BalancePublicPath)
+      .getCapability<&FUSD.Vault{FungibleToken.Balance}>(/public/fusdBalance)
       .check()
 
     return receiver && balance
@@ -28,22 +28,22 @@ const CODE = cdc`
       .check()
   }
 
-  pub fun hasMarket(_ address: Address): Bool {
+  pub fun hasStorefront(_ address: Address): Bool {
     return getAccount(address)
-      .getCapability<&KittyItemsMarket.Collection{KittyItemsMarket.CollectionPublic}>(KittyItemsMarket.CollectionPublicPath)
+      .getCapability<&NFTStorefront.Storefront{NFTStorefront.StorefrontPublic}>(NFTStorefront.StorefrontPublicPath)
       .check()
   }
 
   transaction {
     prepare(acct: AuthAccount) {
-      if !hasKibble(acct.address) {
-        if acct.borrow<&Kibble.Vault>(from: Kibble.VaultStoragePath) == nil {
-          acct.save(<-Kibble.createEmptyVault(), to: Kibble.VaultStoragePath)
+      if !hasFUSD(acct.address) {
+        if acct.borrow<&FUSD.Vault>(from: /storage/fusdVault) == nil {
+          acct.save(<-FUSD.createEmptyVault(), to: /storage/fusdVault)
         }
-        acct.unlink(Kibble.ReceiverPublicPath)
-        acct.unlink(Kibble.BalancePublicPath)
-        acct.link<&Kibble.Vault{FungibleToken.Receiver}>(Kibble.ReceiverPublicPath, target: Kibble.VaultStoragePath)
-        acct.link<&Kibble.Vault{FungibleToken.Balance}>(Kibble.BalancePublicPath, target: Kibble.VaultStoragePath)
+        acct.unlink(/public/fusdReceiver)
+        acct.unlink(/public/fusdBalance)
+        acct.link<&FUSD.Vault{FungibleToken.Receiver}>(/public/fusdReceiver, target: /storage/fusdVault)
+        acct.link<&FUSD.Vault{FungibleToken.Balance}>(/public/fusdBalance, target: /storage/fusdVault)
       }
 
       if !hasItems(acct.address) {
@@ -54,12 +54,12 @@ const CODE = cdc`
         acct.link<&KittyItems.Collection{NonFungibleToken.CollectionPublic, KittyItems.KittyItemsCollectionPublic}>(KittyItems.CollectionPublicPath, target: KittyItems.CollectionStoragePath)
       }
 
-      if !hasMarket(acct.address) {
-        if acct.borrow<&KittyItemsMarket.Collection>(from: KittyItemsMarket.CollectionStoragePath) == nil {
-          acct.save(<-KittyItemsMarket.createEmptyCollection(), to: KittyItemsMarket.CollectionStoragePath)
+      if !hasStorefront(acct.address) {
+        if acct.borrow<&NFTStorefront.Storefront>(from: NFTStorefront.StorefrontStoragePath) == nil {
+          acct.save(<-NFTStorefront.createStorefront(), to: NFTStorefront.StorefrontStoragePath)
         }
-        acct.unlink(KittyItemsMarket.CollectionPublicPath)
-        acct.link<&KittyItemsMarket.Collection{KittyItemsMarket.CollectionPublic}>(KittyItemsMarket.CollectionPublicPath, target:KittyItemsMarket.CollectionStoragePath)
+        acct.unlink(NFTStorefront.StorefrontPublicPath)
+        acct.link<&NFTStorefront.Storefront{NFTStorefront.StorefrontPublic}>(NFTStorefront.StorefrontPublicPath, target: NFTStorefront.StorefrontStoragePath)
       }
     }
   }
