@@ -19,11 +19,14 @@ deployed on the Flow Testnet.
 If you'd like to deploy your own version, see the [deploy to Heroku](#optional-heroku-deployment) instructions near the bottom to this setup guide.
 
 ## ✨ Getting Started
-### 1. Install the Flow CLI
 
-Before you start, install the [Flow command-line interface (CLI)](https://docs.onflow.org/flow-cli).
 
-_⚠️ This project requires `flow-cli v0.15.0` or above._
+
+### 1. Install Dependencies
+
+_🛠 This project requires `Docker`._ See: [Docker installation instructions](https://www.docker.com/get-started) <br/>
+_🛠 This project requires `NodeJS v14.x` or above._ See: [Node installation instructions](https://nodejs.org/en/) <br/>
+_🛠 This project requires `flow-cli v0.15.0` or above._ See: [Flow CLI installation instructions](https://docs.onflow.org/flow-cli)
 
 ### 2. Clone the project
 
@@ -35,7 +38,9 @@ git clone https://github.com/onflow/kitty-items.git
 - Run `npm install` in the root of the project.
 - Run `npx lerna exec npm install` to install project dependencies.
 
-### 4. Start the project
+### 4. Start the project 
+
+Continue reading the sections below for instructions on how to start the project for local development, or testnet development.
 
 ## Local development
 
@@ -44,6 +49,12 @@ git clone https://github.com/onflow/kitty-items.git
 
 2)  Run `flow project deploy --network emulator`
     - All contracts are deployed to the emulator.
+
+
+Thats it! 🏁
+
+Visit `http://localhost:3001` to interact with your new instance of Kitty Items!
+
 
 ## Testnet development
 ### Create a Flow Testnet account 
@@ -74,6 +85,7 @@ After your account has been created, export the following environment variables 
 
 export FLOW_ADDRESS=address
 export FLOW_PRIVATE_KEY=xxxxxxxxxxxx
+export FLOW_PUBLIC_KEY=xxxxxxxxxxxx
 ```
 
 _⚠️ Note: It's important that these variables are exported in each shell where you're running any of the commands in this walkthrough._
@@ -83,6 +95,12 @@ _⚠️ Note: It's important that these variables are exported in each shell whe
   
 2) Run: `flow project deploy --network testnet -f flow.json -f flow.testnet.json`
    - All contracts are deployed to the Flow testnet.
+
+3) Select "Blocto" to log in.
+
+Thats it! 🏁
+
+Visit `http://localhost:3001` to interact with your new instance of Kitty Items!
 
 ---
 ### (Optional) Heroku Deployment
