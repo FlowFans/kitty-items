@@ -2,11 +2,12 @@ export default function normalizeItem(item) {
   return Object.assign(
     {},
     {
-      itemID: item.sale_item_id,
-      resourceID: item.sale_item_resource_id,
-      typeID: item.sale_item_type,
-      owner: item.sale_item_owner,
-      price: item.sale_price,
+      itemID: Number(item.item_id),
+      resourceID: Number(item.listing_id),
+      typeID: Number(item.item_type),
+      rarityId: Number(item.item_rarity),
+      owner: item.owner,
+      price: parseFloat(item.price),
       txID: item.transaction_id,
     }
   )
