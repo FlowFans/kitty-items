@@ -12,13 +12,16 @@
   },
   "dependencies": {
     "@headlessui/react": "^1.4.1",
-    "@onflow/fcl": "0.0.77",
+    "@onflow/fcl": "^0.0.79-alpha.3",
+    "@onflow/transport-grpc": "^0.0.3-alpha.0",
     "@onflow/types": "^0.0.5",
     "@onflow/util-actor": "^0.0.2",
     "@onflow/util-invariant": "^0.0.0",
     "@onflow/util-uid": "^0.0.1",
+    "api": "^3.4.1",
     "autoprefixer": "^10.3.7",
-    "next": "^12.0.3",
+    "next": "^12.0.8",
+    "postcss": "^8.3.11",
     "prop-types": "^15.7.2",
     "react": "17.0.2",
     "react-dom": "17.0.2",
@@ -26,8 +29,6 @@
     "swr": "^1.0.1",
     "tailwindcss": "^2.2.19",
     "use-debounce": "^7.0.0",
-    "postcss": "^8.3.11",
-    "api": "^3.4.1",
     "web": "0.0.2"
   },
   "devDependencies": {

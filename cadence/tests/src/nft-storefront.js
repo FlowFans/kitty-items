@@ -1,30 +1,24 @@
-import { deployContractByName, executeScript, sendTransaction } from "flow-js-testing";
+import { deployContractByName, sendTransaction, executeScript } from "flow-js-testing"
 import { getKittyAdminAddress } from "./common";
 import { deployKittyItems, setupKittyItemsOnAccount } from "./kitty-items";
 
 /*
  * Deploys KittyItems and NFTStorefront contracts to KittyAdmin.
  * @throws Will throw an error if transaction is reverted.
- * @returns {Promise<*>}
+ * @returns {Promise<[{*} txResult, {error} error]>}
  * */
 export const deployNFTStorefront = async () => {
 	const KittyAdmin = await getKittyAdminAddress();
-
 	await deployKittyItems();
 
-	const addressMap = {
-		NonFungibleToken: KittyAdmin,
-		KittyItems: KittyAdmin,
-	};
-
-	return deployContractByName({ to: KittyAdmin, name: "NFTStorefront", addressMap });
+	return deployContractByName({ to: KittyAdmin, name: "NFTStorefront" });
 };
 
 /*
  * Sets up NFTStorefront.Storefront on account and exposes public capability.
  * @param {string} account - account address
  * @throws Will throw an error if transaction is reverted.
- * @returns {Promise<*>}
+ * @returns {Promise<[{*} txResult, {error} error]>}
  * */
 export const setupStorefrontOnAccount = async (account) => {
 	// Account shall be able to store Kitty Items
@@ -41,10 +35,9 @@ export const setupStorefrontOnAccount = async (account) => {
  * @param {string} seller - seller account address
  * @param {UInt64} itemId - id of item to sell
  * @param {UFix64} price - price
- * @throws Will throw an error if transaction is reverted.
- * @returns {Promise<*>}
+ * @returns {Promise<[{*} txResult, {error} error]>}
  * */
-export const createItemListing = async (seller, itemId, price) => {
+export const createListing = async (seller, itemId, price) => {
 	const name = "nftStorefront/create_listing";
 	const args = [itemId, price];
 	const signers = [seller];
@@ -57,10 +50,9 @@ export const createItemListing = async (seller, itemId, price) => {
  * @param {string} buyer - buyer account address
  * @param {UInt64} resourceId - resource uuid of item to sell
  * @param {string} seller - seller account address
- * @throws Will throw an error if transaction is reverted.
- * @returns {Promise<*>}
+ * @returns {Promise<[{*} txResult, {error} error]>}
  * */
-export const purchaseItemListing = async (buyer, resourceId, seller) => {
+export const purchaseListing = async (buyer, resourceId, seller) => {
 	const name = "nftStorefront/purchase_listing";
 	const args = [resourceId, seller];
 	const signers = [buyer];
@@ -72,10 +64,9 @@ export const purchaseItemListing = async (buyer, resourceId, seller) => {
  * Removes item with id equal to **item** from sale.
  * @param {string} owner - owner address
  * @param {UInt64} itemId - id of item to remove
- * @throws Will throw an error if transaction is reverted.
- * @returns {Promise<*>}
+ * @returns {Promise<[{*} txResult, {error} error]>}
  * */
-export const removeItemListing = async (owner, itemId) => {
+export const removeListing = async (owner, itemId) => {
 	const name = "nftStorefront/remove_listing";
 	const signers = [owner];
 	const args = [itemId];
@@ -86,8 +77,7 @@ export const removeItemListing = async (owner, itemId) => {
 /*
  * Returns the number of items for sale in a given account's storefront.
  * @param {string} account - account address
- * @throws Will throw an error if execution will be halted
- * @returns {UInt64}
+ * @returns {Promise<[{UInt64} result, {error} error]>}
  * */
 export const getListingCount = async (account) => {
 	const name = "nftStorefront/get_listings_length";

@@ -7,6 +7,7 @@ import { FlowService } from './flow'
 
 const fungibleTokenPath = '"../../contracts/FungibleToken.cdc"'
 const nonFungibleTokenPath = '"../../contracts/NonFungibleToken.cdc"'
+const metadataViewsPath = '"../../contracts/MetadataViews.cdc"'
 const flowTokenPath = '"../../contracts/FlowToken.cdc"'
 const kittyItemsPath = '"../../contracts/KittyItems.cdc"'
 const storefrontPath = '"../../contracts/NFTStorefront.cdc"'
@@ -19,8 +20,9 @@ class StorefrontService {
     private readonly fungibleTokenAddress: string,
     private readonly flowTokenAddress: string,
     private readonly nonFungibleTokenAddress: string,
+    private readonly metadataViewsAddress: string,
     public readonly storefrontAddress: string,
-    private readonly kittyItemsAddress: string
+    private readonly minterAddress: string
   ) {}
 
   setupAccount = () => {
@@ -65,11 +67,11 @@ class StorefrontService {
     const authorization = this.flowService.authorizeMinter()
 
     const transaction = fs
-      .readFileSync(path.join(__dirname, `../../../cadence/transactions/nftStorefront/buy_item.cdc`), 'utf8')
+      .readFileSync(path.join(__dirname, `../../../cadence/transactions/nftStorefront/purchase_listing.cdc`), 'utf8')
       .replace(fungibleTokenPath, fcl.withPrefix(this.fungibleTokenAddress))
       .replace(nonFungibleTokenPath, fcl.withPrefix(this.nonFungibleTokenAddress))
       .replace(flowTokenPath, fcl.withPrefix(this.flowTokenAddress))
-      .replace(kittyItemsPath, fcl.withPrefix(this.kittyItemsAddress))
+      .replace(kittyItemsPath, fcl.withPrefix(this.minterAddress))
       .replace(storefrontPath, fcl.withPrefix(this.storefrontAddress))
 
     return this.flowService.sendTx({
@@ -85,11 +87,11 @@ class StorefrontService {
     const authorization = this.flowService.authorizeMinter()
 
     const transaction = fs
-      .readFileSync(path.join(__dirname, `../../../cadence/transactions/nftStorefront/sell_item.cdc`), 'utf8')
+      .readFileSync(path.join(__dirname, `../../../cadence/transactions/nftStorefront/create_listing.cdc`), 'utf8')
       .replace(fungibleTokenPath, fcl.withPrefix(this.fungibleTokenAddress))
       .replace(nonFungibleTokenPath, fcl.withPrefix(this.nonFungibleTokenAddress))
       .replace(flowTokenPath, fcl.withPrefix(this.flowTokenAddress))
-      .replace(kittyItemsPath, fcl.withPrefix(this.kittyItemsAddress))
+      .replace(kittyItemsPath, fcl.withPrefix(this.minterAddress))
       .replace(storefrontPath, fcl.withPrefix(this.storefrontAddress))
 
     return this.flowService.sendTx({
@@ -106,7 +108,8 @@ class StorefrontService {
     const script = fs
       .readFileSync(path.join(__dirname, '../../../cadence/scripts/nftStorefront/get_listing_item.cdc'), 'utf8')
       .replace(nonFungibleTokenPath, fcl.withPrefix(this.nonFungibleTokenAddress))
-      .replace(kittyItemsPath, fcl.withPrefix(this.kittyItemsAddress))
+      .replace(metadataViewsPath, fcl.withPrefix(this.metadataViewsAddress))
+      .replace(kittyItemsPath, fcl.withPrefix(this.minterAddress))
       .replace(storefrontPath, fcl.withPrefix(this.storefrontAddress))
 
     return this.flowService.executeScript<any>({
@@ -126,8 +129,8 @@ class StorefrontService {
         .insert({
           listing_id: listingResourceID,
           item_id: item.itemID,
-          item_type: item.typeID,
-          item_rarity: item.rarityID,
+          item_kind: item.kind.rawValue,
+          item_rarity: item.rarity.rawValue,
           owner: owner,
           // TODO: Increase sale_price precision to match UFix64
           price: item.price,
@@ -166,12 +169,12 @@ class StorefrontService {
         query.where('owner', params.owner)
       }
 
-      if (params.typeId) {
-        query.where('item_type', params.typeId)
+      if (params.kind) {
+        query.where('item_kind', params.kind)
       }
 
-      if (params.rarityId) {
-        query.where('item_rarity', Number(params.rarityId))
+      if (params.rarity) {
+        query.where('item_rarity', Number(params.rarity))
       }
 
       if (params.minPrice) {
@@ -183,7 +186,7 @@ class StorefrontService {
       }
 
       if (params.marketplace) {
-        query.where('owner', '!=', this.storefrontAddress)
+        query.where('owner', '!=', this.minterAddress)
       }
 
       if (params.page) {

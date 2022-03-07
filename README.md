@@ -1,17 +1,17 @@
 <p align="center">
-    <a href="http://kitty-items-flow-testnet-prod.herokuapp.com/">
+    <a href="https://kitty-items.onflow.org/">
         <img width="400" src="kitty-items-banner.png" />
     </a>
 </p>
 
 👋 Welcome! This demo app is designed to help you learn to build on Flow.
 
-- Kitty Items is a **complete NFT marketplace** built with [Cadence](https://docs.onflow.org/cadence), Flow's resource-oriented smart contract programming language.
+- Kitty Items: CryptoKitties Sample App is a **complete NFT marketplace** built with [Cadence](https://docs.onflow.org/cadence), Flow's resource-oriented smart contract programming language.
 - Learn how to deploy contracts, mint NFTs, and integrate user wallets with the Flow Client Library (FCL).
 
 ## 🎬 Live Demo
 
-Check out the [live demo of Kitty Items](http://kitty-items-flow-testnet-prod.herokuapp.com/),
+Check out the [live demo of Kitty Items](https://kitty-items.onflow.org/),
 deployed on the Flow Testnet.
 
 If you'd like to deploy your own version, see the [deploy to Heroku](#optional-heroku-deployment) instructions near the bottom to this setup guide.
@@ -39,6 +39,11 @@ git clone https://github.com/onflow/kitty-items.git
 ### 4. Start the project 
 
 Continue reading the sections below for instructions on how to start the project for local development, or testnet development.
+
+### 🐳  Working with Docker 
+
+If you pull new changes from the main Kitty Items repository, you'll need to delete all existing Docker containers and Images, 
+and restart the project to ensure Docker rebuilds each application with the updates. 
 
 ## Local development
 
@@ -139,7 +144,7 @@ We love decentralization, but servers are still very useful, and this one's no e
 
 ### 3. Cadence Code | [kitty-items/cadence](https://github.com/onflow/kitty-items/tree/master/cadence)
 
-[Cadence](https://docs.onflow.org/cadence) smart contracts, scripts & transactions for your viewing pleasure. This folder contains all of the blockchain logic for the marketplace application. Here you will find examples of [fungible token](https://github.com/onflow/flow-ft) and [non-fungible token (NFT)](https://github.com/onflow/flow-nft) smart contract implementations, as well as the scripts and transactions that interact with them. It also contains examples of how to _test_ your Cadence code (tests written in Golang).
+[Cadence](https://docs.onflow.org/cadence) smart contracts, scripts & transactions for your viewing pleasure. This folder contains all of the blockchain logic for the marketplace application. Here you will find examples of [fungible token](https://github.com/onflow/flow-ft) and [non-fungible token (NFT)](https://github.com/onflow/flow-nft) smart contract implementations, as well as the scripts and transactions that interact with them. It also contains examples of how to _test_ your Cadence code.
 
 ## 😺 What are Kitty Items?
 

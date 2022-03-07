@@ -30,31 +30,31 @@ describe("Kitty Items", () => {
 		const basePath = path.resolve(__dirname, "../../");
 		const port = 7002;
 		await init(basePath, { port });
-		return emulator.start(port, false);
+		await emulator.start(port, false);
+		return await new Promise(r => setTimeout(r, 1000));
 	});
 
 	// Stop emulator, so it could be restarted
 	afterEach(async () => {
-		return emulator.stop();
+		await emulator.stop();
+		return await new Promise(r => setTimeout(r, 1000));
 	});
 
-	it("shall deploy KittyItems contract", async () => {
-		await deployKittyItems();
+	it("should deploy KittyItems contract", async () => {
+		await shallPass(deployKittyItems());
 	});
 
-	it("supply shall be 0 after contract is deployed", async () => {
+	it("supply should be 0 after contract is deployed", async () => {
 		// Setup
 		await deployKittyItems();
 		const KittyAdmin = await getKittyAdminAddress();
 		await shallPass(setupKittyItemsOnAccount(KittyAdmin));
 
-		await shallResolve(async () => {
-			const supply = await getKittyItemSupply();
-			expect(supply).toBe(0);
-		});
+		const [supply] = await shallResolve(getKittyItemSupply())
+		expect(supply).toBe(0);
 	});
 
-	it("shall be able to mint a kittyItems", async () => {
+	it("should be able to mint a kitty item", async () => {
 		// Setup
 		await deployKittyItems();
 		const Alice = await getAccountAddress("Alice");
@@ -64,20 +64,18 @@ describe("Kitty Items", () => {
 		await shallPass(mintKittyItem(Alice, types.fishbowl, rarities.blue));
 	});
 
-	it("shall be able to create a new empty NFT Collection", async () => {
+	it("should be able to create a new empty NFT Collection", async () => {
 		// Setup
 		await deployKittyItems();
 		const Alice = await getAccountAddress("Alice");
 		await setupKittyItemsOnAccount(Alice);
 
 		// shall be able te read Alice collection and ensure it's empty
-		await shallResolve(async () => {
-			const itemCount = await getKittyItemCount(Alice);
-			expect(itemCount).toBe(0);
-		});
+		const [itemCount] = await shallResolve(getKittyItemCount(Alice))
+		expect(itemCount).toBe(0);
 	});
 
-	it("shall not be able to withdraw an NFT that doesn't exist in a collection", async () => {
+	it("should not be able to withdraw an NFT that doesn't exist in a collection", async () => {
 		// Setup
 		await deployKittyItems();
 		const Alice = await getAccountAddress("Alice");
@@ -89,7 +87,7 @@ describe("Kitty Items", () => {
 		await shallRevert(transferKittyItem(Alice, Bob, 1337));
 	});
 
-	it("shall be able to withdraw an NFT and deposit to another accounts collection", async () => {
+	it("should be able to withdraw an NFT and deposit to another accounts collection", async () => {
 		await deployKittyItems();
 		const Alice = await getAccountAddress("Alice");
 		const Bob = await getAccountAddress("Bob");

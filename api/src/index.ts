@@ -1,4 +1,5 @@
 import * as fcl from "@onflow/fcl"
+import { send as grpcSend } from "@onflow/transport-grpc"
 import { hideBin } from "yargs/helpers"
 import yargs from "yargs/yargs"
 import initApp from "./app"
@@ -52,6 +53,7 @@ async function run() {
     config.fungibleTokenAddress,
     config.flowTokenAddress,
     config.nonFungibleTokenAddress,
+    config.metadataViewsAddress,
     config.storefrontAddress,
     config.minterAddress,
   );
@@ -60,7 +62,9 @@ async function run() {
   fcl
     .config()
     .put("accessNode.api", config.accessApi)
-    .put("decoder.Type", val => val.staticType);
+    .put("decoder.Type", val => val.staticType)
+    .put("decoder.Enum", val => Number(val.fields[0].value.value))
+    .put("sdk.transport", grpcSend)
 
   const startWorker = () => {
     console.log("Starting Flow event worker ....");
@@ -81,6 +85,7 @@ async function run() {
     const kittyItemsService = new KittyItemsService(
       flowService,
       config.nonFungibleTokenAddress,
+      config.metadataViewsAddress,
       config.minterAddress,
       config.fungibleTokenAddress,
       config.flowTokenAddress,
