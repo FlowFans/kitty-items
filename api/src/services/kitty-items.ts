@@ -17,14 +17,13 @@ enum Kind {
   Milkshake,
   TukTuk,
   Skateboard,
-  Shades,
 }
 
 enum Rarity {
   Blue = 0,
   Green,
   Purple,
-  Gold
+  Gold,
 }
 
 const randomKind = () => {
@@ -46,10 +45,9 @@ const ITEM_RARITY_PROBABILITIES = {
 
 const randomRarity = () => {
   const rarities = Object.keys(ITEM_RARITY_PROBABILITIES)
-  const rarityProbabilities = rarities
-    .flatMap(rarity =>
-      Array(ITEM_RARITY_PROBABILITIES[rarity]).fill(rarity)
-    )
+  const rarityProbabilities = rarities.flatMap(rarity =>
+    Array(ITEM_RARITY_PROBABILITIES[rarity]).fill(rarity)
+  )
 
   const index = Math.floor(Math.random() * rarityProbabilities.length)
 
@@ -78,7 +76,10 @@ class KittyItemsService {
         ),
         "utf8"
       )
-      .replace(nonFungibleTokenPath, fcl.withPrefix(this.nonFungibleTokenAddress))
+      .replace(
+        nonFungibleTokenPath,
+        fcl.withPrefix(this.nonFungibleTokenAddress)
+      )
       .replace(kittyItemsPath, fcl.withPrefix(this.kittyItemsAddress))
 
     return this.flowService.sendTx({
@@ -104,7 +105,10 @@ class KittyItemsService {
         ),
         "utf8"
       )
-      .replace(nonFungibleTokenPath, fcl.withPrefix(this.nonFungibleTokenAddress))
+      .replace(
+        nonFungibleTokenPath,
+        fcl.withPrefix(this.nonFungibleTokenAddress)
+      )
       .replace(kittyItemsPath, fcl.withPrefix(this.kittyItemsAddress))
 
     return this.flowService.sendTx({
@@ -135,7 +139,10 @@ class KittyItemsService {
         ),
         "utf8"
       )
-      .replace(nonFungibleTokenPath, fcl.withPrefix(this.nonFungibleTokenAddress))
+      .replace(
+        nonFungibleTokenPath,
+        fcl.withPrefix(this.nonFungibleTokenAddress)
+      )
       .replace(kittyItemsPath, fcl.withPrefix(this.kittyItemsAddress))
       .replace(fungibleTokenPath, fcl.withPrefix(this.fungibleTokenAddress))
       .replace(flowTokenPath, fcl.withPrefix(this.flowTokenAddress))
@@ -166,7 +173,10 @@ class KittyItemsService {
         ),
         "utf8"
       )
-      .replace(nonFungibleTokenPath, fcl.withPrefix(this.nonFungibleTokenAddress))
+      .replace(
+        nonFungibleTokenPath,
+        fcl.withPrefix(this.nonFungibleTokenAddress)
+      )
       .replace(kittyItemsPath, fcl.withPrefix(this.kittyItemsAddress))
 
     return this.flowService.sendTx({
@@ -187,7 +197,10 @@ class KittyItemsService {
         ),
         "utf8"
       )
-      .replace(nonFungibleTokenPath, fcl.withPrefix(this.nonFungibleTokenAddress))
+      .replace(
+        nonFungibleTokenPath,
+        fcl.withPrefix(this.nonFungibleTokenAddress)
+      )
       .replace(kittyItemsPath, fcl.withPrefix(this.kittyItemsAddress))
 
     return this.flowService.executeScript<number[]>({
@@ -205,7 +218,10 @@ class KittyItemsService {
         ),
         "utf8"
       )
-      .replace(nonFungibleTokenPath, fcl.withPrefix(this.nonFungibleTokenAddress))
+      .replace(
+        nonFungibleTokenPath,
+        fcl.withPrefix(this.nonFungibleTokenAddress)
+      )
       .replace(metadataViewsPath, fcl.withPrefix(this.metadataViewsAddress))
       .replace(kittyItemsPath, fcl.withPrefix(this.kittyItemsAddress))
 

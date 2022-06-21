@@ -9,6 +9,7 @@ pub contract KittyItems: NonFungibleToken {
     pub event Withdraw(id: UInt64, from: Address?)
     pub event Deposit(id: UInt64, to: Address?)
     pub event Minted(id: UInt64, kind: UInt8, rarity: UInt8)
+    pub event ImagesAddedForNewKind(kind: UInt8)
 
     // Named Paths
     //
@@ -49,7 +50,6 @@ pub contract KittyItems: NonFungibleToken {
         pub case milkshake
         pub case tuktuk
         pub case skateboard
-        pub case shades
     }
 
     pub fun kindToString(_ kind: Kind): String {
@@ -64,8 +64,6 @@ pub contract KittyItems: NonFungibleToken {
                 return "Tuk-Tuk"
             case Kind.skateboard:
                 return "Skateboard"
-            case Kind.shades:
-                return "Shades"
         }
 
         return ""
@@ -165,7 +163,7 @@ pub contract KittyItems: NonFungibleToken {
     // Collection
     // A collection of KittyItem NFTs owned by an account
     //
-    pub resource Collection: KittyItemsCollectionPublic, NonFungibleToken.Provider, NonFungibleToken.Receiver, NonFungibleToken.CollectionPublic {
+    pub resource Collection: KittyItemsCollectionPublic, NonFungibleToken.Provider, NonFungibleToken.Receiver, NonFungibleToken.CollectionPublic, MetadataViews.ResolverCollection {
         // dictionary of NFT conforming tokens
         // NFT is a resource type with an `UInt64` ID field
         //
@@ -211,7 +209,7 @@ pub contract KittyItems: NonFungibleToken {
         // so that the caller can read its metadata and call its methods
         //
         pub fun borrowNFT(id: UInt64): &NonFungibleToken.NFT {
-            return &self.ownedNFTs[id] as &NonFungibleToken.NFT
+            return (&self.ownedNFTs[id] as &NonFungibleToken.NFT?)!
         }
 
         // borrowKittyItem
@@ -221,11 +219,17 @@ pub contract KittyItems: NonFungibleToken {
         //
         pub fun borrowKittyItem(id: UInt64): &KittyItems.NFT? {
             if self.ownedNFTs[id] != nil {
-                let ref = &self.ownedNFTs[id] as auth &NonFungibleToken.NFT
+                let ref = (&self.ownedNFTs[id] as auth &NonFungibleToken.NFT?)!
                 return ref as! &KittyItems.NFT
             } else {
                 return nil
             }
+        }
+
+        pub fun borrowViewResolver(id: UInt64): &AnyResource{MetadataViews.Resolver} {
+            let nft = (&self.ownedNFTs[id] as auth &NonFungibleToken.NFT?)!
+            let kittyItem = nft as! &KittyItems.NFT
+            return kittyItem as &AnyResource{MetadataViews.Resolver}
         }
 
         // destructor
@@ -272,6 +276,19 @@ pub contract KittyItems: NonFungibleToken {
             )
 
             KittyItems.totalSupply = KittyItems.totalSupply + (1 as UInt64)
+        }
+
+        // Update NFT images for new type
+        pub fun addNewImagesForKind(from: AuthAccount, newImages: {Kind: {Rarity: String}}) {
+            let kindValue = KittyItems.images.containsKey(newImages.keys[0]) 
+            if(!kindValue) {
+                KittyItems.images.insert(key: newImages.keys[0], newImages.values[0])
+                emit ImagesAddedForNewKind(
+                    kind: newImages.keys[0].rawValue,
+                )
+            } else {
+                panic("No Rugs... Can't update existing NFT images.")
+            }
         }
     }
 
@@ -332,12 +349,6 @@ pub contract KittyItems: NonFungibleToken {
                 Rarity.green: "bafybeic55lpwfvucmgibbvaury3rpeoxmcgyqra3vdhjwp74wqzj6oqvpq",
                 Rarity.purple: "bafybeiepqu75oknv2vertl5nbq7gqyac5tbpekqcfy73lyk2rcjgz7irpu",
                 Rarity.gold: "bafybeic5ehqovuhix4lyspxfawlegkrkp6aaloszyscmjvmjzsbxqm6s2i"
-            },
-            Kind.shades: {
-                Rarity.blue: "bafybeibtxvitlnvksnzwrwmsqdgnoznosknr3fx5jxjazjcerpa2qo4jy4",
-                Rarity.green: "bafybeicp5bagsziwkyarey76m5jkr6i3a5yrgr7r435qyuutbtlqxcdbwu",
-                Rarity.purple: "bafybeidjigkvt67dtuwrgrpdt2z4dojq2efpbw66ndnffkb6eyr4baml2i",
-                Rarity.gold: "bafybeibtxvitlnvksnzwrwmsqdgnoznosknr3fx5jxjazjcerpa2qo4jy4"
             }
         }
 

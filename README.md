@@ -14,117 +14,44 @@
 Check out the [live demo of Kitty Items](https://kitty-items.onflow.org/),
 deployed on the Flow Testnet.
 
-If you'd like to deploy your own version, see the [deploy to Heroku](#optional-heroku-deployment) instructions near the bottom to this setup guide.
-
 ## ✨ Getting Started
 
-
+> Looking for a step by step guide? [**Follow the Kitty Items tutorial in the Flow documentation**](https://docs.onflow.org/kitty-items/install/).
 
 ### 1. Install Dependencies
 
-_🛠 This project requires `Docker`._ See: [Docker installation instructions](https://www.docker.com/get-started) <br/>
-_🛠 This project requires `NodeJS v14.x` or above._ See: [Node installation instructions](https://nodejs.org/en/) <br/>
-_🛠 This project requires `flow-cli v0.28.0` or above._ See: [Flow CLI installation instructions](https://docs.onflow.org/flow-cli)
+_🛠 This project requires `NodeJS v16.x` or above._ See: [Node installation instructions](https://nodejs.org/en/) <br/>
+_🛠 This project requires `flow-cli v0.32.1` or above._ See: [Flow CLI installation instructions](https://docs.onflow.org/flow-cli)
 
 ### 2. Clone the project
 
 ```sh
-git clone https://github.com/onflow/kitty-items.git
+git clone --depth=1 https://github.com/onflow/kitty-items.git
 ```
-### 3. Install dependencies
+
+### 3. Install packages
 
 - Run `npm install` in the root of the project.
-- Run `npx lerna exec npm install` to install project dependencies.
 
-### 4. Start the project 
-
-Continue reading the sections below for instructions on how to start the project for local development, or testnet development.
-
-### 🐳  Working with Docker 
-
-If you pull new changes from the main Kitty Items repository, you'll need to delete all existing Docker containers and Images, 
-and restart the project to ensure Docker rebuilds each application with the updates. 
+⚠️ **NOTE for Mac M1 users:** <br/>
+You'll need to run the following command in the web project: <br/>
+From the `./web` directory run `npm install -D @next/swc-darwin-arm64`
 
 ## Local development
 
-1)  Run `npm run start:dev` 
+1.  Run `npm run dev:emulator`
+
     - Local development uses the [Flow Emulator](https://docs.onflow.org/emulator/) and the [FCL Development Wallet](https://github.com/onflow/fcl-dev-wallet) to simulate the blockchain and an FCL-compatible wallet.
 
-2)  Run `flow project deploy --network emulator`
-    - All contracts are deployed to the emulator.
-
-3) Visit `http://localhost:3001` and follow the instructions "Initialize the Service Account to mint Kitty Items" at the top of the webpage.
+2.  In another terminal, from the root of the project run `flow dev-wallet`
 
 Thats it! 🏁
-
 
 ## Testnet development
-### Create a Flow Testnet account 
 
-You'll need a Testnet account to work on this project. Here's how to make one:
-
-#### Generate a key pair
-
-Generate a new key pair with the Flow CLI:
-
-```sh
-flow keys generate
-```
-
-_⚠️ Make sure to save these keys in a safe place, you'll need them later._
-
-#### Create your account
-
-Go to the [Flow Testnet Faucet](https://testnet-faucet.onflow.org/) to create a new account. Use the **public key** from the previous step.
-
-#### Save your keys
-
-After your account has been created, export the following environment variables to your shell:
-
-```sh
-# Replace these values with the address returned from the faucet and the
-# private key you generated in the first step!
-
-export FLOW_ADDRESS=address
-export FLOW_PRIVATE_KEY=xxxxxxxxxxxx
-export FLOW_PUBLIC_KEY=xxxxxxxxxxxx
-```
-
-_⚠️ Note: It's important that these variables are exported in each shell where you're running any of the commands in this walkthrough._
-
-1)  Run: `npm run start:testnet`
-    - Testnet development will connect the application to Flow's testnet
-  
-2) Run: `flow project deploy --network testnet -f flow.json -f flow.testnet.json`
-   - All contracts are deployed to the Flow testnet.
-
-3) Select "Blocto" to log in.
-
-Thats it! 🏁
-
-Visit `http://localhost:3001` to interact with your new instance of Kitty Items!
+Run `npm run dev:testnet` and follow the prompt to begin developing on testnet.
 
 ---
-### (Optional) Heroku Deployment
-
-If you'd like to deploy a version of this app to Heroku for testing, you can use this button!
-
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
-
-You'll need to supply the following configuration variables when prompted: 
-
-```bash
-# The Flow address and private key you generated above
-
-MINTER_ADDRESS
-MINTER_PRIVATE_KEY
-
-# The Flow address where you have deployed your Kitty Items contract.
-# (usually the same Flow address as above)
-
-NEXT_PIBLIC_CONTRACT_KITTY_ITEMS
-NEXT_PUBLIC_CONTRACT_NFT_STOREFRONT
-```
 
 ## Project Overview
 
@@ -157,6 +84,43 @@ In the future you'll be able to add them to [Ethereum CryptoKitties](https://www
 
 - Chat with the team on the [Flow Discord server](https://discord.gg/xUdZxs82Rz)
 - Ask questions on the [Flow community forum](https://forum.onflow.org/t/kitty-items-marketplace-demo-dapp/759/5)
+
+## Troubleshooting
+
+#### Non-Intel issues <br/>
+
+You'll need to run the following command in the web project: <br/>
+From the `./web` directory run `npm install -D @next/swc-darwin-arm64` <br/>
+If you're running on another non-intel based system, the issue and troubleshooting steps are detailed here: [https://github.com/vercel/next.js/discussions/30468](https://github.com/vercel/next.js/discussions/30468)
+
+#### Rebuild dependencies
+
+- The `api` and `web` projects depend on `sqlite3`. If you change `node` versions on your system, you'll need to cd into the `web` and `api` directory and run `npm rebuild` to rebuild you dependencies for the new version.
+
+#### Finding the logs
+
+- You can see what processes have been started, and if they are online using `pm2 list`
+- You can tail logs for individual processes using `pm2 logs [process name]`. eg., `pm2 logs api` or `pm2 logs web`
+- You can tail _all logs_ in the same terminal using `pm2 logs`
+
+#### Starting over
+
+- In the event of problems, you may want to start over. To reset the project, perform these steps:
+  - Run `pm2 delete all` to stop and delete all processes
+  - Delete database files in `./api`. (`kitty-items-db-*.sqlite`)
+
+#### Unblock ports
+
+- Kitty Items uses the following ports. Make sure they are not in use by another process
+  - `8080` : Flow emulator
+  - `3569` : Flow emulator
+  - `3000` : Kitty Items API
+  - `3001` : Kitty Items web app
+  - `8701` : FCL dev-wallet
+
+#### Understanding the Marketplace
+
+- The Kitty Items Marketplace on testnet is universal. _Every instance of Kitty Items deployed on Testnet points to the same marketplace (`NFTStorefront`) contract_. So, you may see other listing s showing up in your Kitty items instance, but you will not see items in _your_ marketplace page that were added _before_ you deployed your instance of Kitty Items.
 
 ---
 
